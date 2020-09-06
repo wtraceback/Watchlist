@@ -3,13 +3,22 @@
     <head>
         <meta charset="utf-8">
         <title>{{ name }}'s Watchlist</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+        <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
+        <header>
+            <h2>
+                <img class="totoro" src="{{ url_for('static', filename='images/totoro.jpg') }}" alt="totoro">
+                {{ name }}'s Watchlist
+            </h2>
+        </header>
+
         <div class="container">
-            <h2>{{ name }}'s Watchlist</h2>
             <p>{{ movies|length }} Titles</p>
 
-            <ul>
+            <ul class="movie-list">
                 {% for movie in movies %}
                 <li>{{ movie.title }} - {{ movie.year }}</li>
                 {% endfor %}
@@ -17,6 +26,7 @@
         </div>
 
         <footer>
+            <img class="stroll" src="{{ url_for('static', filename='images/stroll.jpg') }}" alt="stroll">
             <small>
                 &copy; 2020 whxcer
             </small>
