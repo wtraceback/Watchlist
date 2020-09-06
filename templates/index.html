@@ -1,35 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>{{ user.name }}'s Watchlist</title>
-        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-        <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <header>
-            <h2>
-                <img class="totoro" src="{{ url_for('static', filename='images/totoro.jpg') }}" alt="totoro">
-                {{ user.name }}'s Watchlist
-            </h2>
-        </header>
+{% extends 'base.html' %}
 
-        <div class="container">
-            <p>{{ movies|length }} Titles</p>
+{% block content %}
+    <p>{{ movies|length }} Titles</p>
 
-            <ul class="movie-list">
-                {% for movie in movies %}
-                <li>{{ movie.title }} - {{ movie.year }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+    <ul class="movie-list">
+        {% for movie in movies %}
+            <li>
+                {{ movie.title }} - {{ movie.year }}
+                <span class="float-right">
+                    <a class="douban" href="https://movie.douban.com/subject_search?search_text={{ movie.title }}" target="_blank" title="Find this movie on douban">豆瓣</a>
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
 
-        <footer>
-            <img class="stroll" src="{{ url_for('static', filename='images/stroll.jpg') }}" alt="stroll">
-            <small>
-                &copy; 2020 whxcer
-            </small>
-        </footer>
-    </body>
-</html>
+    <img class="stroll" src="{{ url_for('static', filename='images/stroll.jpg') }}" alt="stroll">
+{% endblock %}

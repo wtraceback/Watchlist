@@ -6,6 +6,30 @@ body {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+nav li {
+    float: left;
+}
+
+nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 8px 12px;
+    text-decoration: none;
+}
+
+nav li a:hover {
+    background-color: #111;
+}
+
 /* 页脚 */
 footer {
     color: #888;
@@ -39,6 +63,20 @@ footer {
 
 .movie-list li:hover {
     background-color: #f8f9fa;
+}
+
+.float-right {
+    float: right;
+}
+
+.douban {
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    background: #007711;
+    border-radius: 5px;
+    padding: 3px 5px;
 }
 
 /* 龙猫图片 */
