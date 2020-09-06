@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>{{ name }}'s Watchlist</title>
+        <title>{{ user.name }}'s Watchlist</title>
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
         <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -11,7 +11,7 @@
         <header>
             <h2>
                 <img class="totoro" src="{{ url_for('static', filename='images/totoro.jpg') }}" alt="totoro">
-                {{ name }}'s Watchlist
+                {{ user.name }}'s Watchlist
             </h2>
         </header>
 
