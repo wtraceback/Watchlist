@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{{ user.name }}'s Watchlist</title>
+        <title>{{ user.name }} 的观影清单</title>
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
         <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -12,21 +12,31 @@
         <header>
             <h2>
                 <img class="totoro" src="{{ url_for('static', filename='images/totoro.jpg') }}" alt="totoro">
-                {{ user.name }}'s Watchlist
+                {{ user.name }} 的观影清单
             </h2>
 
             <nav>
                 <ul>
                     <li>
-                        <a href="{{ url_for('index') }}">Home</a>
+                        <a href="{{ url_for('index') }}">首页</a>
                     </li>
                 </ul>
             </nav>
         </header>
 
         <div class="container">
-            {% block content %}
-            {% endblock %}
+            <div class="message_alert">
+                {% for message in get_flashed_messages() %}
+                    <div class="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="content">
+                {% block content %}
+                {% endblock %}
+            </div>
         </div>
 
         <footer>
