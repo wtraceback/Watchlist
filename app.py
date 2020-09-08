@@ -1,7 +1,9 @@
 from flask import Flask, render_template, url_for, request, flash, redirect
+from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import sys
 from flask_sqlalchemy import SQLAlchemy     # 导入扩展类
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import click
 
 
@@ -24,12 +26,29 @@ app.config['SECRET_KEY'] = 'dev'
 
 # 扩展 初始化 操作
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message = '请先登录.'
+
+# 用户加载回调函数
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.query.get(int(user_id))
+    return user
 
 
 # 创建数据库模型
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
+    username = db.Column(db.String(20))
+    password_hash = db.Column(db.String(128))
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def validate_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Movie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -75,12 +94,34 @@ def forge():
         {'title': '流浪地球', 'year': '2019'},
     ]
 
-    user = User(name=name)
+    user = User.query.first()
+    user.name = 'Whxcer'
     db.session.add(user)
 
     for m in movies:
         movie = Movie(title=m['title'], year=m['year'])
         db.session.add(movie)
+
+    db.session.commit()
+    click.echo('Done.')
+
+@app.cli.command()
+@click.option('--username', prompt=True, help='The username used to login.')
+@click.option('--password', prompt=True, hide_input=True, confirmation_prompt=True, help='The password used to login.')
+def admin(username, password):
+    """Create user."""
+    db.create_all()
+
+    user = User.query.first()
+    if user is not None:
+        click.echo('Updating user...')
+        user.username = username
+        user.set_password(password)
+    else:
+        click.echo('Creating user...')
+        user = User(username=username, name='Admin')
+        user.set_password(password)
+        db.session.add(user)
 
     db.session.commit()
     click.echo('Done.')
@@ -97,6 +138,9 @@ def inject_user():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        if not current_user.is_authenticated:
+            return redirect(url_for('index'))
+
         # 获取表单数据
         title = request.form.get('title')
         year = request.form.get('year')
@@ -118,6 +162,7 @@ def index():
 
 
 @app.route('/movie/edit/<int:movie_id>', methods=['GET', 'POST'])
+@login_required
 def edit(movie_id):
     movie = Movie.query.get_or_404(movie_id)
 
@@ -139,6 +184,7 @@ def edit(movie_id):
 
 
 @app.route('/movie/delete/<int:movie_id>', methods=['POST'])
+@login_required
 def delete(movie_id):
     movie = Movie.query.get_or_404(movie_id)
 
@@ -148,9 +194,52 @@ def delete(movie_id):
     return redirect(url_for('index'))
 
 
-@app.errorhandler(400)
-def bad_request(e):
-    return render_template('400.html'), 400
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if not username or not password:
+            flash('输入的数据不能为空.')
+            return redirect(url_for('login'))
+
+        user = User.query.first()
+        if username == user.username and user.validate_password(password):
+            login_user(user)
+            flash('登录成功.')
+            return redirect(url_for('index'))
+
+        flash('验证失败，输入的用户名或密码错误.')
+        return redirect(url_for('login'))
+
+    return render_template('login.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('拜拜.')
+    return redirect(url_for('index'))
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+    if request.method == 'POST':
+        name =  request.form('name')
+
+        if not name or len(name) > 20:
+            flash('无效的输入.')
+            return redirect(url_for('settings'))
+
+        current_user.name = name
+        db.session.commit()
+        flash('用户名更改成功.')
+        return redirect(url_for('index'))
+
+    return render_template('settings.html')
 
 
 @app.errorhandler(404)
