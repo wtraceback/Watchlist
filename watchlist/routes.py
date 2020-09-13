@@ -129,5 +129,5 @@ def guestbook():
         flash('您的消息已发送给全世界！')
         return redirect(url_for('guestbook'))
 
-    messages = Message.query.all()
+    messages = Message.query.order_by(Message.timestamp.desc()).all()
     return render_template('guestbook.html', messages=messages)

@@ -4,6 +4,7 @@ import sys
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_moment import Moment
 
 
 # 在扩展类实例化之前设置好配置项
@@ -27,6 +28,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = '请先登录.'
+moment = Moment(app)
 
 
 # 用户加载回调函数
