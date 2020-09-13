@@ -262,6 +262,46 @@ class Watchlist_TestCase(unittest.TestCase):
         self.assertNotIn('用户名更改成功', data)
         self.assertIn('无效的输入', data)
 
+    def test_guestbook(self):
+        """测试留言板"""
+        response = self.client.get('/guestbook')
+        data = response.get_data(as_text=True)
+
+        self.assertIn('你的名字', data)
+        self.assertIn('想说的话', data)
+
+        # 测试提交留言
+        response = self.client.post('/guestbook', data=dict(
+            name='测试1号',
+            body='这是一条留言'
+        ), follow_redirects=True)
+        data = response.get_data(as_text=True)
+
+        self.assertIn('您的消息已发送给全世界', data)
+        self.assertIn('测试1号', data)
+        self.assertIn('这是一条留言', data)
+
+        # 测试提交留言，名字为空
+        response = self.client.post('/guestbook', data=dict(
+            name='',
+            body='第二条留言'
+        ), follow_redirects=True)
+        data = response.get_data(as_text=True)
+
+        self.assertIn('输入格式错误 -- 数据太短或是超长', data)
+        self.assertNotIn('您的消息已发送给全世界', data)
+        self.assertNotIn('第二条留言', data)
+
+        # 测试提交留言，留言主体为空
+        response = self.client.post('/guestbook', data=dict(
+            name='测试2号',
+            body=''
+        ), follow_redirects=True)
+        data = response.get_data(as_text=True)
+
+        self.assertIn('输入格式错误 -- 数据太短或是超长', data)
+        self.assertNotIn('您的消息已发送给全世界', data)
+        self.assertNotIn('测试2号', data)
 
     def test_forge_command(self):
         """测试虚拟数据"""
