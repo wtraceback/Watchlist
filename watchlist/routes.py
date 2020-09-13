@@ -2,7 +2,7 @@ from flask import render_template, request, url_for, redirect, flash
 from flask_login import login_user, login_required, logout_user, current_user
 
 from watchlist import app, db
-from watchlist.models import User, Movie
+from watchlist.models import User, Movie, Message
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -110,3 +110,24 @@ def settings():
         return redirect(url_for('index'))
 
     return render_template('settings.html')
+
+
+@app.route('/guestbook', methods=['get', 'post'])
+def guestbook():
+    if request.method == 'POST':
+        name = request.form['name']
+        body = request.form['body']
+
+        if not name or not body or len(name) > 20 or len(body) > 200:
+            flash('输入格式错误 -- 数据太短或是超长')
+            return redirect(url_for('guestbook'))
+
+        # 将表单数据保存到数据库
+        message = Message(name=name, body=body)
+        db.session.add(message)
+        db.session.commit()
+        flash('您的消息已发送给全世界！')
+        return redirect(url_for('guestbook'))
+
+    messages = Message.query.all()
+    return render_template('guestbook.html', messages=messages)

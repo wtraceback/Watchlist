@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3>Say Hello To The World</h3>
+
+    <form method="post">
+        <label for="name">你的名字</label><br>
+        <input id="name" type="text" name="name" autocomplete="off" required><br><br>
+
+        <label for="body">想说的话</label><br>
+        <input id="body" type="text" name="body" autocomplete="off" required><br><br>
+
+        <input class="butn" type="submit" name="submit" value="提交">
+    </form>
+
+    <ul class="message-list">
+        {% for message in messages %}
+            <li class="message-list-item">
+                <div class="message-title">
+                    <strong>
+                        {{ message.name }}
+                    </strong>
+                    <span>
+                        #{{ message.id }}
+                    </span>
+                </div>
+                <div class="message-content">
+                    <span>
+                        {{ message.body }}
+                    </span>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
