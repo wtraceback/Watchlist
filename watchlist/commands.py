@@ -43,8 +43,7 @@ def forge():
         {'title': '流浪地球', 'year': '2019'},
     ]
 
-    user = User.query.first()
-    user.name = 'Whxcer'
+    user = User(name=name)
     db.session.add(user)
 
     for m in movies:
