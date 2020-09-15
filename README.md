@@ -8,7 +8,7 @@ Demo: http://whxcer2.pythonanywhere.com
 
 电影列表主页:
 
-![电影列表主页](watchlist/screenshot/screenshot_guestbook.png)
+![电影列表主页](watchlist/screenshot/screenshot_index.png)
 
 留言板页:
 
